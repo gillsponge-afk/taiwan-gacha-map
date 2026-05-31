@@ -279,6 +279,16 @@
       font-weight: 700;
     }
 
+    /* 彈窗圖片 */
+    .popup-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
     /* Google Maps 連結 */
     .popup-gmaps-link {
       display: block;
@@ -612,6 +622,7 @@
               character: cols[6] || '',   // IP
               limited:   cols[7] || '',   // 期間限定
               note:      cols[8] || '',   // 備註
+              image:     cols[9] || '',   // 圖片（Google Drive 連結）
             };
           })
           // 過濾掉：名稱是空的、或經緯度不是數字的列
@@ -629,6 +640,20 @@
         document.getElementById('locationList').innerHTML =
           '<div style="padding:20px;color:#ff6b6b;text-align:center;">❌ 資料載入失敗<br><small>請確認 Sheet 已設定公開發布</small></div>';
       }
+    }
+
+    // =============================================
+    // 🖼️ 把 Google Drive 分享連結轉成可顯示的圖片網址
+    // 原本：https://drive.google.com/file/d/【ID】/view?usp=sharing
+    // 轉成：https://drive.google.com/uc?export=view&id=【ID】
+    // =============================================
+    function driveUrlToImage(url) {
+      if (!url) return '';
+      const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (match) {
+        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+      }
+      return url; // 如果不是 Drive 連結，直接用原始網址
     }
 
     // =============================================
@@ -682,6 +707,7 @@
         const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
           .addTo(map)
           .bindPopup(`
+            ${loc.image ? `<img src="${driveUrlToImage(loc.image)}" class="popup-img" />` : ''}
             <div class="popup-title">${loc.name}</div>
             ${loc.venue ? `<div class="popup-addr">🏢 ${loc.venue}</div>` : ""}
             <div class="popup-addr">📍 ${loc.addr}</div>
@@ -704,6 +730,7 @@
           <div class="loc-tags">
             ${loc.character ? `<span class="tag">${loc.character}</span>` : ''}
             ${loc.city ? `<span class="tag">${loc.city}</span>` : ''}
+            ${loc.venue ? `<span class="tag">${loc.venue}</span>` : ''}
           </div>
         `;
 
