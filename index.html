@@ -279,6 +279,16 @@
       font-weight: 700;
     }
 
+    /* 彈窗圖片 */
+    .popup-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
     /* Google Maps 連結 */
     .popup-gmaps-link {
       display: block;
@@ -435,6 +445,61 @@
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
+    /* ===== 手機版 RWD ===== */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      header {
+        padding: 10px 16px;
+      }
+
+      .logo h1 { font-size: 16px; }
+      .header-info { display: none; }
+
+      .main {
+        flex-direction: column;
+      }
+
+      /* 手機版側邊欄變成下半部 */
+      .sidebar {
+        width: 100%;
+        height: 45vh;
+        border-right: none;
+        border-top: 2px solid var(--pink);
+        flex-shrink: 0;
+      }
+
+      .sidebar-header h2 { display: none; }
+
+      /* 手機版地圖佔上半 */
+      #map {
+        height: 55vh;
+        min-height: 0;
+      }
+
+      /* 手機版卡片 hover 不位移 */
+      .loc-card:hover {
+        transform: none;
+      }
+
+      /* 手機版地圖容器 */
+      .main > div:last-child {
+        flex: none;
+        height: 55vh;
+      }
+
+      /* 右下角統計移到左下 */
+      .map-badge {
+        bottom: 12px;
+        right: 12px;
+        padding: 6px 12px;
+      }
+
+      .map-badge strong { font-size: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -552,11 +617,12 @@
               venue:     cols[1] || '',   // 場地
               city:      cols[2] || '',   // 縣市
               addr:      cols[3] || '',   // 地址
-              lat:       parseFloat(cols[4]),  // 緯度（轉成數字）
-              lng:       parseFloat(cols[5]),  // 經度（轉成數字）
-              character: cols[6] || '',   // 熱門角色
+              lat:       parseFloat(cols[4]),  // 緯度
+              lng:       parseFloat(cols[5]),  // 經度
+              character: cols[6] || '',   // IP
               limited:   cols[7] || '',   // 期間限定
               note:      cols[8] || '',   // 備註
+              image:     cols[9] || '',   // 圖片（Google Drive 連結）
             };
           })
           // 過濾掉：名稱是空的、或經緯度不是數字的列
@@ -574,6 +640,20 @@
         document.getElementById('locationList').innerHTML =
           '<div style="padding:20px;color:#ff6b6b;text-align:center;">❌ 資料載入失敗<br><small>請確認 Sheet 已設定公開發布</small></div>';
       }
+    }
+
+    // =============================================
+    // 🖼️ 把 Google Drive 分享連結轉成可顯示的圖片網址
+    // 原本：https://drive.google.com/file/d/【ID】/view?usp=sharing
+    // 轉成：https://drive.google.com/uc?export=view&id=【ID】
+    // =============================================
+    function driveUrlToImage(url) {
+      if (!url) return '';
+      const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (match) {
+        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+      }
+      return url; // 如果不是 Drive 連結，直接用原始網址
     }
 
     // =============================================
@@ -627,10 +707,11 @@
         const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
           .addTo(map)
           .bindPopup(`
+            ${loc.image ? `<img src="${driveUrlToImage(loc.image)}" class="popup-img" />` : ''}
             <div class="popup-title">${loc.name}</div>
             ${loc.venue ? `<div class="popup-addr">🏢 ${loc.venue}</div>` : ""}
             <div class="popup-addr">📍 ${loc.addr}</div>
-            ${loc.character ? `<div class="popup-addr">⭐ 熱門角色：${loc.character}</div>` : ''}
+            ${loc.character ? `<div class="popup-addr">⭐ IP：${loc.character}</div>` : ''}
             ${loc.note ? `<div class="popup-addr">📝 ${loc.note}</div>` : ''}
             ${loc.limited ? `<div class="popup-limited">⏰ 期間限定：${loc.limited}</div>` : ''}
 
@@ -646,8 +727,11 @@
         card.innerHTML = `
           <div class="loc-name">${loc.name}</div>
           ${loc.limited ? `<div class="loc-limited">⏰ ${loc.limited}</div>` : ''}
-          ${loc.character ? `<div class="loc-meta">⭐ ${loc.character}</div>` : ''}
-          ${loc.venue ? `<div class="loc-meta">🏢 ${loc.venue}</div>` : ''}
+          <div class="loc-tags">
+            ${loc.character ? `<span class="tag">${loc.character}</span>` : ''}
+            ${loc.city ? `<span class="tag">${loc.city}</span>` : ''}
+            ${loc.venue ? `<span class="tag">${loc.venue}</span>` : ''}
+          </div>
         `;
 
         // 點卡片 → 地圖飛到該地點並打開彈窗
