@@ -707,7 +707,7 @@
         const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
           .addTo(map)
           .bindPopup(`
-            ${loc.image ? `<img src="${driveUrlToImage(loc.image)}" class="popup-img" />` : ''}
+            ${loc.image ? `<img src="${loc.image.trim()}" class="popup-img" />` : ''}
             <div class="popup-title">${loc.name}</div>
             ${loc.venue ? `<div class="popup-addr">🏢 ${loc.venue}</div>` : ""}
             <div class="popup-addr">📍 ${loc.addr}</div>
