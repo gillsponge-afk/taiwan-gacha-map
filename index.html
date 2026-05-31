@@ -552,9 +552,9 @@
               venue:     cols[1] || '',   // 場地
               city:      cols[2] || '',   // 縣市
               addr:      cols[3] || '',   // 地址
-              lat:       parseFloat(cols[4]),  // 緯度（轉成數字）
-              lng:       parseFloat(cols[5]),  // 經度（轉成數字）
-              character: cols[6] || '',   // 熱門角色
+              lat:       parseFloat(cols[4]),  // 緯度
+              lng:       parseFloat(cols[5]),  // 經度
+              character: cols[6] || '',   // IP
               limited:   cols[7] || '',   // 期間限定
               note:      cols[8] || '',   // 備註
             };
@@ -646,8 +646,11 @@
         card.innerHTML = `
           <div class="loc-name">${loc.name}</div>
           ${loc.limited ? `<div class="loc-limited">⏰ ${loc.limited}</div>` : ''}
-          ${loc.character ? `<div class="loc-meta">⭐ ${loc.character}</div>` : ''}
-          <div class="loc-meta">📍 ${loc.city}${loc.venue ? `・${loc.venue}` : ''}</div>
+          <div class="loc-tags">
+            ${loc.character ? `<span class="tag">${loc.character}</span>` : ''}
+            ${loc.city ? `<span class="tag">${loc.city}</span>` : ''}
+            ${loc.venue ? `<span class="tag">${loc.venue}</span>` : ''}
+          </div>
         `;
 
         // 點卡片 → 地圖飛到該地點並打開彈窗
