@@ -630,7 +630,7 @@
             <div class="popup-title">${loc.name}</div>
             ${loc.venue ? `<div class="popup-addr">🏢 ${loc.venue}</div>` : ""}
             <div class="popup-addr">📍 ${loc.addr}</div>
-            ${loc.character ? `<div class="popup-addr">⭐ 熱門角色：${loc.character}</div>` : ''}
+            ${loc.character ? `<div class="popup-addr">⭐ IP：${loc.character}</div>` : ''}
             ${loc.note ? `<div class="popup-addr">📝 ${loc.note}</div>` : ''}
             ${loc.limited ? `<div class="popup-limited">⏰ 期間限定：${loc.limited}</div>` : ''}
 
@@ -647,7 +647,7 @@
           <div class="loc-name">${loc.name}</div>
           ${loc.limited ? `<div class="loc-limited">⏰ ${loc.limited}</div>` : ''}
           ${loc.character ? `<div class="loc-meta">⭐ ${loc.character}</div>` : ''}
-          ${loc.venue ? `<div class="loc-meta">🏢 ${loc.venue}</div>` : ''}
+          <div class="loc-meta">📍 ${loc.city}${loc.venue ? `・${loc.venue}` : ''}</div>
         `;
 
         // 點卡片 → 地圖飛到該地點並打開彈窗
