@@ -543,8 +543,8 @@
             const cols = parseCSVRow(row);
             return {
               name:      cols[0] || '',   // 店名
-              city:      cols[1] || '',   // 縣市
-              district:  cols[2] || '',   // 地區
+              venue:     cols[1] || '',   // 場地
+              city:      cols[2] || '',   // 縣市
               addr:      cols[3] || '',   // 地址
               lat:       parseFloat(cols[4]),  // 緯度（轉成數字）
               lng:       parseFloat(cols[5]),  // 經度（轉成數字）
@@ -622,7 +622,8 @@
           .addTo(map)
           .bindPopup(`
             <div class="popup-title">${loc.name}</div>
-            <div class="popup-addr">📍 ${loc.city}${loc.district} ${loc.addr}</div>
+            <div class="popup-addr">📍 ${loc.city} ${loc.addr}</div>
+            ${loc.venue ? `<div class="popup-addr">🏢 ${loc.venue}</div>` : ""}
             ${loc.character ? `<div class="popup-addr">⭐ 熱門角色：${loc.character}</div>` : ''}
             ${loc.note ? `<div class="popup-addr">📝 ${loc.note}</div>` : ''}
             ${loc.limited ? `<div class="popup-limited">⏰ 期間限定：${loc.limited}</div>` : ''}
@@ -672,6 +673,7 @@
         loc.name.toLowerCase().includes(keyword) ||
         loc.addr.toLowerCase().includes(keyword) ||
         loc.city.toLowerCase().includes(keyword) ||
+        loc.venue.toLowerCase().includes(keyword) ||
         loc.character.toLowerCase().includes(keyword)
       );
       renderLocations(filtered);
